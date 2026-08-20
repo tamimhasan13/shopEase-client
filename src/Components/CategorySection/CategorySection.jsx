@@ -7,7 +7,7 @@ const CategorySection = () => {
     <section className="max-padd-container bg-white py-14 sm:py-16 lg:py-20">
       <div>
         {/* Section Header */}
-        <Title title="Category" title2="List" />
+        <Title title="Category" title2="List" para=" " />
         {/* Categories */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 md:gap-5 lg:gap-6">
           {categories.map((category) => (
