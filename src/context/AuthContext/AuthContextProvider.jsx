@@ -4,6 +4,7 @@ import{dummyProducts} from "../../assets/data"
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState("user");
   const [products,setProducts]=useState([]);
+  const currency = import.meta.env.VITE_CURRENCY;
   // const navigate=useNavigate();
   //fetch product
   useEffect(() => {
@@ -17,7 +18,8 @@ const AuthContextProvider = ({ children }) => {
   const userInfo = {
     user,
     setUser,
-    products
+    products,
+    currency,
   };
   return <AuthContext value={userInfo}>{children}</AuthContext>;
 };
