@@ -6,6 +6,11 @@ import HomePage from "../pages/HomePage/HomePage";
 import CollectionPage from "../pages/CollectionPage/CollectionPage";
 import CategoryCollectionPage from "../pages/CategoryCollectionPage/CategoryCollectionPage";
 import ProductDetailsPage from "../pages/ProductDetails/ProductDetailsPage";
+import TestimonialPage from "../pages/TestimonialPage/TestimonialPage";
+import ContractPage from "../pages/ContractPage/ContractPage";
+import CartPage from "../pages/CartPage/CartPage";
+import PlaceOderPage from "../pages/PlaceOderPage/PlaceOderPage";
+import MyOdersPage from "../pages/MyOdersPage/MyOdersPage";
 
 
 export const router = createBrowserRouter([
@@ -24,11 +29,35 @@ export const router = createBrowserRouter([
       },
       {
         path: "/collection/:category",
-        element:<CategoryCollectionPage/>
+        element: <CategoryCollectionPage />,
       },
       {
         path: "/collection/:category/:id",
-        element:<ProductDetailsPage></ProductDetailsPage>
+        element: <ProductDetailsPage></ProductDetailsPage>,
+      },
+      {
+        path: "/testimonial",
+        element: <TestimonialPage></TestimonialPage>,
+      },
+      {
+        path: "/contact",
+        element: <ContractPage></ContractPage>,
+      },
+      {
+        path: "/cart",
+        element: <CartPage></CartPage>,
+      },
+      {
+        path: "/place-order",
+        element: <PlaceOderPage></PlaceOderPage>,
+      },
+      {
+        path: "/my-orders",
+        element: <MyOdersPage></MyOdersPage>,
+      },
+      {
+        path: "/place-order",
+        element: <PlaceOderPage></PlaceOderPage>,
       },
     ],
   },
