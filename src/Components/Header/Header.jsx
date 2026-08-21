@@ -4,37 +4,33 @@ import { Link, NavLink } from "react-router-dom";
 import Logo from "../Common/Logo/Logo";
 import HeaderActions from "./HeaderActions";
 import SearchBar from "./SearchBar";
-
+const navLinks = [
+  {
+    id: 1,
+    name: "Home",
+    path: "/",
+  },
+  {
+    id: 2,
+    name: "Collection",
+    path: "/collection",
+  },
+  {
+    id: 3,
+    name: "Testimonial",
+    path: "/testimonial",
+  },
+  {
+    id: 4,
+    name: "Contact",
+    path: "/contact",
+  },
+];
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // const location=useLocation();
-  const navLinks = [
-    {
-      id: 1,
-      name: "Home",
-      path: "/",
-    },
-    {
-      id: 2,
-      name: "Shop",
-      path: "/shop",
-    },
-    {
-      id: 3,
-      name: "Categories",
-      path: "/categories",
-    },
-    {
-      id: 4,
-      name: "About",
-      path: "/about",
-    },
-    {
-      id: 5,
-      name: "Contact",
-      path: "/contact",
-    },
-  ];
+   const [searchQuery, setSearchQuery] = useState("");
+  
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
@@ -78,43 +74,46 @@ const Header = () => {
 
           {/* Desktop Search */}
           <div className="hidden w-full max-w-90 lg:block">
-            <SearchBar />
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
           </div>
 
           {/*  Header Actions */}
           <HeaderActions cartCount={3} />
         </div>
 
-          {/*  Mobile Menu */}
-          <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${
-              mobileMenuOpen ? "max-h-125 opacity-100 pb-5" : "max-h-0 opacity-0"
-            }`}
-          >
-            {/* Mobile Search */}
-            <div className="mb-4">
-              <SearchBar />
-            </div>
-
-            {/* Mobile Navigation */}
-            <nav className="rounded-xl border border-gray-100 bg-gray-50 p-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.id}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-lg px-4 py-3 text-[15px] font-medium text-gray-700 transition hover:bg-white hover:text-red-500"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Mobile Actions */}
-            <div className="mt-4 border-t border-gray-200 pt-4">
-              <HeaderActions cartCount={3} />
-            </div>
+        {/*  Mobile Menu */}
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${
+            mobileMenuOpen ? "max-h-125 opacity-100 pb-5" : "max-h-0 opacity-0"
+          }`}
+        >
+          {/* Mobile Search */}
+          <div className="mb-4">
+            <SearchBar />
           </div>
+
+          {/* Mobile Navigation */}
+          <nav className="rounded-xl border border-gray-100 bg-gray-50 p-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.id}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-lg px-4 py-3 text-[15px] font-medium text-gray-700 transition hover:bg-white hover:text-red-500"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Mobile Actions */}
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <HeaderActions cartCount={3} />
+          </div>
+        </div>
       </div>
     </header>
   );
