@@ -7,7 +7,7 @@ const HeaderActions = ({ cartCount = 0}) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const {user}=useContext(AuthContext);
 
-  // পরে AuthContext থেকে এই user আসবে
+  // AuthContext  user
 
   const handleLogout = () => {
     setProfileOpen(false);
@@ -37,7 +37,7 @@ const HeaderActions = ({ cartCount = 0}) => {
         />
 
         {/* Cart Badge */}
-        {cartCount > 0 && (
+        {cartCount >=0 && (
           <span className="absolute -right-0.5 -top-0.5 flex 4.75 min-w-4.75 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-white">
             {cartCount > 99 ? "99+" : cartCount}
           </span>

@@ -6,6 +6,7 @@ import { router } from "./routes/router.jsx";
 import AuthContextProvider from "./context/AuthContext/AuthContextProvider.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { Toaster } from "react-hot-toast";
 AOS.init({
   duration: 800,
   easing: "ease-out-cubic",
@@ -17,5 +18,6 @@ createRoot(document.getElementById("root")).render(
     <AuthContextProvider>
       <RouterProvider router={router} />
     </AuthContextProvider>
+    <Toaster position="top-right" />
   </StrictMode>,
 );

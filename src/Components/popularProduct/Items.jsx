@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const Items = ({ product }) => {
+  const { addToCart }=useContext(AuthContext);
   const navigation = useNavigate();
   const [hovered, setHovered] = useState(false);
   return (
@@ -73,6 +75,7 @@ const Items = ({ product }) => {
 
           {/* Add To Cart */}
           <button
+            onClick={() => addToCart(product._id)}
             type="button"
             className="shrink-0 rounded-lg bg-gray-900 px-2.5 py-2 text-[10px] font-semibold text-white shadow-sm transition-all duration-300 hover:bg-red-500 hover:shadow-md hover:shadow-red-500/20 active:scale-95 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-xs"
           >

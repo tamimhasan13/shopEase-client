@@ -11,6 +11,9 @@ import ContractPage from "../pages/ContractPage/ContractPage";
 import CartPage from "../pages/CartPage/CartPage";
 import PlaceOderPage from "../pages/PlaceOderPage/PlaceOderPage";
 import MyOdersPage from "../pages/MyOdersPage/MyOdersPage";
+import AuthLayout from "../layouts/AuthLayout";
+import Login from "../Components/Login/Login";
+import Register from "../Components/Register/Register";
 
 
 export const router = createBrowserRouter([
@@ -58,6 +61,20 @@ export const router = createBrowserRouter([
       {
         path: "/place-order",
         element: <PlaceOderPage></PlaceOderPage>,
+      },
+    ],
+  },
+  {
+    path: "/",
+    Component: AuthLayout,
+    children: [
+      {
+        path: "/login",
+        Component: Login,
+      },
+      {
+        path: "/register",
+        Component: Register,
       },
     ],
   },

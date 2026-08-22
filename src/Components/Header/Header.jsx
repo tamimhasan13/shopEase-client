@@ -1,9 +1,10 @@
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Logo from "../Common/Logo/Logo";
 import HeaderActions from "./HeaderActions";
 import SearchBar from "./SearchBar";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 const navLinks = [
   {
     id: 1,
@@ -27,6 +28,7 @@ const navLinks = [
   },
 ];
 const Header = () => {
+  const { getCartCount }=useContext(AuthContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // const location=useLocation();
    const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +83,7 @@ const Header = () => {
           </div>
 
           {/*  Header Actions */}
-          <HeaderActions cartCount={3} />
+          <HeaderActions cartCount={getCartCount()} />
         </div>
 
         {/*  Mobile Menu */}

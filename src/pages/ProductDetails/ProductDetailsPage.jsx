@@ -16,13 +16,14 @@ import RelatedProducts from "../../Components/RelatedProducts/RelatedProducts";
 const SIZE_ORDER = ["S", "M", "L", "XL", "XXL"];
 
 const ProductDetailsPage = () => {
-  const { products = [], currency } = useContext(AuthContext);
+  const { products = [], currency, addToCart } = useContext(AuthContext);
   const { id } = useParams();
 
   const product = products.find((item) => item._id === id);
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+
 
   // Product image
   const mainImage = selectedImage || product?.image?.[0];
@@ -221,6 +222,7 @@ const ProductDetailsPage = () => {
             {/* Cart Actions */}
             <div className="mt-7 flex gap-3">
               <button
+                onClick={() => addToCart(product._id,selectedSize)}
                 type="button"
                 className="group flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-gray-900 px-5 text-sm font-semibold text-white transition-all duration-300 hover:bg-red-500 active:scale-[0.98]"
               >
