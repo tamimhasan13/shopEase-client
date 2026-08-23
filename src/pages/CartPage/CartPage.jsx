@@ -1,16 +1,15 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import CartItem from "./CartItem";
 import CartSummary from "./CartSummary";
 import EmptyCart from "./EmptyCart";
 
-import { AuthContext } from "../../context/AuthContext/AuthContext";
 import Title from "../../Components/Common/Title/Title";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const CartPage = () => {
   const navigate = useNavigate();
-
   const {
     products,
     cartItems,
@@ -21,24 +20,23 @@ const CartPage = () => {
     Shipping_fee,
     Tax_rate,
   } = useContext(AuthContext);
-
+ console.log(cartItems);
   // Cart products
- const cartData = [];
+  const cartData = [];
 
- Object.entries(cartItems).forEach(([productId, sizes]) => {
-   Object.entries(sizes).forEach(([size, quantity]) => {
-     const product = products.find((item) => item._id === productId);
+  Object.entries(cartItems).forEach(([productId, sizes]) => {
+    Object.entries(sizes).forEach(([size, quantity]) => {
+      const product = products.find((item) => item._id === productId);
 
-     if (product && quantity > 0) {
-       cartData.push({
-         product,
-         size,
-         quantity,
-       });
-     }
-   });
- });
-
+      if (product && quantity > 0) {
+        cartData.push({
+          product,
+          size,
+          quantity,
+        });
+      }
+    });
+  });
 
   const totalItems = getCartCount();
   const subtotal = getCartAmount();

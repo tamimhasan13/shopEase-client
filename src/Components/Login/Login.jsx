@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
+const [showPassword, setShowPassword] = useState(false);
+const {setUser } = useContext(AuthContext);
+const navigate=useNavigate()
   const {
     register,
     handleSubmit,
@@ -23,8 +25,9 @@ const Login = () => {
     try {
       console.log("Login data:", data);
 
-      //  Firebase/API login function 
+      //  Firebase/API login function
       // await loginUser(data.email, data.password);
+        navigate("/")
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -176,6 +179,7 @@ const Login = () => {
             {/*  LOGIN BUTTON */}
             <button
               type="submit"
+              onClick={() => setUser((prev) => !prev)}
               disabled={isSubmitting}
               className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gray-900 text-sm font-semibold text-white shadow-lg shadow-gray-900/10 transition-all duration-300 hover:bg-red-500 hover:shadow-red-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >

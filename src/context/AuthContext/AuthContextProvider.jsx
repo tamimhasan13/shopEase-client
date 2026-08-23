@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import{dummyProducts} from "../../assets/data"
 import toast from "react-hot-toast";
 const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(false);
   const [products, setProducts] = useState([]);
   const [showUser, setShowUser] = useState();
   const currency = import.meta.env.VITE_CURRENCY;

@@ -3,17 +3,13 @@ import { IoClose } from "react-icons/io5";
 
 const CartItem = ({ item, updateQuantity, removeFromCart }) => {
   const { product, size, quantity } = item;
-
   const itemSubtotal = product.offerPrice * quantity;
-
   const increase = () => {
     updateQuantity(product._id, size, quantity + 1);
   };
-
-const decrease = () => {
-  updateQuantity(product._id, size, quantity - 1);
-};
-
+  const decrease = () => {
+    updateQuantity(product._id, size, quantity - 1);
+  };
   const remove = () => {
     removeFromCart(product._id, size);
   };

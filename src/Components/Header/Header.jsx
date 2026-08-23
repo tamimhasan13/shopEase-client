@@ -1,6 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useContext, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Logo from "../Common/Logo/Logo";
 import HeaderActions from "./HeaderActions";
 import SearchBar from "./SearchBar";
@@ -30,7 +30,9 @@ const navLinks = [
 const Header = () => {
   const { getCartCount }=useContext(AuthContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // const location=useLocation();
+  const location = useLocation();
+
+  const hideSearch = location.pathname === "/place-order";
    const [searchQuery, setSearchQuery] = useState("");
   
 
@@ -76,10 +78,16 @@ const Header = () => {
 
           {/* Desktop Search */}
           <div className="hidden w-full max-w-90 lg:block">
-            <SearchBar
+            {/* <SearchBar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-            />
+            /> */}
+            {!hideSearch && (
+              <SearchBar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+              />
+            )}
           </div>
 
           {/*  Header Actions */}

@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 const HeaderActions = ({ cartCount = 0}) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const {user}=useContext(AuthContext);
-
+console.log(user);
   // AuthContext  user
 
   const handleLogout = () => {

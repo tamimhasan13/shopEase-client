@@ -10,7 +10,7 @@ import TestimonialPage from "../pages/TestimonialPage/TestimonialPage";
 import ContractPage from "../pages/ContractPage/ContractPage";
 import CartPage from "../pages/CartPage/CartPage";
 import PlaceOderPage from "../pages/PlaceOderPage/PlaceOderPage";
-import MyOdersPage from "../pages/MyOdersPage/MyOdersPage";
+import MyOrdersPage from "../pages/MyOrdersPage/MyOrdersPage";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../Components/Login/Login";
 import Register from "../Components/Register/Register";
@@ -56,7 +56,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/my-orders",
-        element: <MyOdersPage></MyOdersPage>,
+        element: <MyOrdersPage></MyOrdersPage>,
       },
       {
         path: "/place-order",

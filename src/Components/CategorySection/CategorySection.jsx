@@ -13,7 +13,7 @@ const CategorySection = () => {
           {categories.map((category) => (
             <div key={category.name}>
               <Link
-                to={`/collection/${category.id}`}
+                to={`/collection/${category.name}`}
                 className="group rounded-2xl border border-gray-100 bg-white p-4 transition-colors duration-300 hover:bg-red-50"
               >
                 {/* Image */}
