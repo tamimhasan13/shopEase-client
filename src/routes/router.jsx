@@ -14,6 +14,11 @@ import MyOrdersPage from "../pages/MyOrdersPage/MyOrdersPage";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../Components/Login/Login";
 import Register from "../Components/Register/Register";
+import PlaceOrderPage from "../pages/PlaceOderPage/PlaceOderPage";
+import AdminLayout from "../layouts/AdminLayout";
+import AddProduct from "../pages/AdminPage/AddProduct";
+import ListProduct from "../pages/AdminPage/ListProduct";
+import Orders from "../pages/AdminPage/Orders";
 
 
 export const router = createBrowserRouter([
@@ -52,7 +57,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/place-order",
-        element: <PlaceOderPage></PlaceOderPage>,
+        element: <PlaceOrderPage></PlaceOrderPage>,
       },
       {
         path: "/my-orders",
@@ -75,6 +80,24 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         Component: Register,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    Component: AdminLayout,
+    children: [
+      {
+        index: true,
+        Component: AddProduct,
+      },
+      {
+        path: "/admin/list",
+        Component: ListProduct,
+      },
+      {
+        path: "/admin/orders",
+        Component: Orders,
       },
     ],
   },

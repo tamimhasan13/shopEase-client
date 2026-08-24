@@ -6,6 +6,7 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [products, setProducts] = useState([]);
   const [showUser, setShowUser] = useState();
+  const [isAdmin,setIsAdmin]=useState(false);
   const currency = import.meta.env.VITE_CURRENCY;
   const Shipping_fee = 10;
   const Tax_rate = 0.02;
@@ -123,6 +124,9 @@ const AuthContextProvider = ({ children }) => {
     Shipping_fee,
     Tax_rate,
     removeFromCart,
+    setIsAdmin,
+    isAdmin,
+    
   };
   return <AuthContext value={userInfo}>{children}</AuthContext>;
 };;
