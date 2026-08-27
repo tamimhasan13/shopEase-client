@@ -1,18 +1,42 @@
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import{dummyProducts} from "../../assets/data"
 import toast from "react-hot-toast";
+import axios from "axios"
+
+axios.defaults.withCredentials=true
+axios.defaults.baseURL=import.meta.env.VITE_BACKEND_URL
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(false);
   const [products, setProducts] = useState([]);
   const [showUser, setShowUser] = useState();
   const [isAdmin,setIsAdmin]=useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
   const currency = import.meta.env.VITE_CURRENCY;
   const Shipping_fee = 10;
   const Tax_rate = 0.02;
   // const navigate=useNavigate();
   const [cartItems, setCartItems] = useState({});
+  // fetch admin
+useEffect(() => {
+  const checkAdmin = async () => {
+    try {
+      const response = await axios.get("/api/admin/is-auth");
 
+      if (response.data.success) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsAdmin(false);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
+  checkAdmin();
+}, []);
   // Add product to cart
   const addToCart = (itemId, size) => {
     if (!size) {
@@ -102,8 +126,18 @@ const AuthContextProvider = ({ children }) => {
   //fetch product
   useEffect(() => {
     const fetchProduct = async () => {
-      const data = await Promise.resolve(dummyProducts);
-      setProducts(data);
+      try {
+        const response = await axios.get("/api/product/list");
+        console.log(response.data);
+        if (response.data.success) {
+          setProducts(response.data.products);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data?.message || error.message);
+      }
     };
 
     fetchProduct();
@@ -112,6 +146,7 @@ const AuthContextProvider = ({ children }) => {
     user,
     setUser,
     products,
+    setProducts,
     currency,
     showUser,
     setShowUser,
@@ -126,7 +161,8 @@ const AuthContextProvider = ({ children }) => {
     removeFromCart,
     setIsAdmin,
     isAdmin,
-    
+    adminLoading,
+    axios
   };
   return <AuthContext value={userInfo}>{children}</AuthContext>;
 };;

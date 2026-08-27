@@ -1,12 +1,15 @@
+
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import toast from "react-hot-toast";
 const AdminLogin = () => {
-  const { isAdmin, setIsAdmin } = useContext(AuthContext);
+  const { isAdmin, setIsAdmin,axios } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -21,14 +24,26 @@ const AdminLogin = () => {
 
   const onSubmitHandler = async (data) => {
     try {
-      console.log("Admin Login Data:", data);
+      const response = await axios.post(
+        `/api/admin/login`,
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      // Future Firebase/API admin login এখানে হবে
-
-      setIsAdmin(true);
-      navigate("/admin");
+      if (response.data.success) {
+        setIsAdmin(true);
+        navigate("/admin");
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
     } catch (error) {
-      console.error("Admin login failed:", error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 

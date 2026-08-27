@@ -1,24 +1,112 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 import upload_icon from "../../assets/upload_icon.png";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const AddProduct = () => {
+    const {axios}=useContext(AuthContext);
   const [files, setFiles] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("10");
-  const [offerPrice, setOfferPrice] = useState("10");
-  const [category, setCategory] = useState("Men");
-  const [popular, setPopular] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 10,
+      offerPrice: 10,
+      category: "Men",
+      popular: false,
+    },
+  });
 
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
+  // Size select/unselect
+  const handleSize = (size) => {
+    setSizes((prev) =>
+      prev.includes(size)
+        ? prev.filter((item) => item !== size)
+        : [...prev, size],
+    );
+  };
+
+  // Image select
+  const handleImageChange = (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const updatedFiles = [...files];
+    updatedFiles[index] = file;
+    setFiles(updatedFiles);
+  };
+
+  // Submit
+  const onSubmitHandler = async (data) => {
+    try {
+      // Size check
+      if (sizes.length === 0) {
+        toast.error("Please select at least one size");
+        return;
+      }
+
+      // Image check
+      const selectedImages = files.filter(Boolean);
+
+      if (selectedImages.length === 0) {
+        toast.error("Please select at least one image");
+        return;
+      }
+
+      // Product data
+      const productData = {
+        name: data.name,
+        description: data.description,
+        price: Number(data.price),
+        offerPrice: Number(data.offerPrice),
+        category: data.category,
+        popular: data.popular,
+        sizes: sizes,
+      };
+
+      // FormData
+      const formData = new FormData();
+
+      // Product data backend 
+      formData.append("productData", JSON.stringify(productData));
+
+      // Images backend 
+      selectedImages.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      // API request
+      const response = await axios.post("/api/product/add", formData);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        // Form reset
+        reset();
+        setFiles([]);
+        setSizes([]);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error.response?.data?.message || error.message);
+    }
   };
 
   return (
     <div className="w-full">
-      <form onSubmit={onSubmitHandler} className="w-full max-w-127.5">
+      <form
+        onSubmit={handleSubmit(onSubmitHandler)}
+        className="w-full max-w-127.5"
+      >
         {/* Product Name */}
         <div className="mb-3">
           <h5 className="mb-1.5 text-[13px] font-semibold text-[#292929]">
@@ -26,12 +114,19 @@ const AddProduct = () => {
           </h5>
 
           <input
-            onChange={(e) => setName(e.target.value)}
+            {...register("name", {
+              required: "Product name is required",
+            })}
             type="text"
-            value={name}
             placeholder="Write here..."
             className="h-8 w-full rounded border border-[#ddd] bg-white px-2.5 text-[12px] text-[#333] outline-none transition focus:border-[#222]"
           />
+
+          {errors.name && (
+            <p className="mt-1 text-[11px] text-red-500">
+              {errors.name.message}
+            </p>
+          )}
         </div>
 
         {/* Product Description */}
@@ -41,12 +136,19 @@ const AddProduct = () => {
           </h5>
 
           <textarea
-            onChange={(e) => setDescription(e.target.value)}
+            {...register("description", {
+              required: "Product description is required",
+            })}
             rows={5}
-            value={description}
             placeholder="Write here..."
             className="block h-26.5 w-full resize-none rounded border border-[#ddd] bg-white px-2.5 py-2 text-[12px] text-[#333] outline-none transition focus:border-[#222]"
           />
+
+          {errors.description && (
+            <p className="mt-1 text-[11px] text-red-500">
+              {errors.description.message}
+            </p>
+          )}
         </div>
 
         {/* Category / Price / Offer Price */}
@@ -58,8 +160,7 @@ const AddProduct = () => {
             </h5>
 
             <select
-              onChange={(e) => setCategory(e.target.value)}
-              value={category}
+              {...register("category")}
               className="h-8 w-17.5 rounded border border-[#ddd] bg-white px-2 text-[12px] text-[#555] outline-none focus:border-[#222]"
             >
               <option value="Men">Men</option>
@@ -78,12 +179,23 @@ const AddProduct = () => {
             </h5>
 
             <input
-              onChange={(e) => setPrice(e.target.value)}
+              {...register("price", {
+                required: "Price is required",
+                min: {
+                  value: 1,
+                  message: "Price must be greater than 0",
+                },
+              })}
               type="number"
-              value={price}
               placeholder="10"
               className="h-8 w-21.25 rounded border border-[#ddd] bg-white px-2.5 text-[12px] text-[#333] outline-none focus:border-[#222]"
             />
+
+            {errors.price && (
+              <p className="mt-1 text-[11px] text-red-500">
+                {errors.price.message}
+              </p>
+            )}
           </div>
 
           {/* Offer Price */}
@@ -93,12 +205,23 @@ const AddProduct = () => {
             </h5>
 
             <input
-              onChange={(e) => setOfferPrice(e.target.value)}
+              {...register("offerPrice", {
+                required: "Offer price is required",
+                min: {
+                  value: 1,
+                  message: "Offer price must be greater than 0",
+                },
+              })}
               type="number"
-              value={offerPrice}
               placeholder="10"
               className="h-8 w-21.25 rounded border border-[#ddd] bg-white px-2.5 text-[12px] text-[#333] outline-none focus:border-[#222]"
             />
+
+            {errors.offerPrice && (
+              <p className="mt-1 text-[11px] text-red-500">
+                {errors.offerPrice.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -109,110 +232,19 @@ const AddProduct = () => {
           </h5>
 
           <div className="flex gap-2">
-            {/* S */}
-            <div
-              onClick={() =>
-                setSizes((pre) =>
-                  pre.includes("S")
-                    ? pre.filter((item) => item !== "S")
-                    : [...pre, "S"],
-                )
-              }
-            >
-              <span
-                className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
-                  sizes.includes("S")
-                    ? "bg-[#292929] text-white"
-                    : "bg-white text-[#666]"
-                }`}
-              >
-                S
-              </span>
-            </div>
-
-            {/* M */}
-            <div
-              onClick={() =>
-                setSizes((pre) =>
-                  pre.includes("M")
-                    ? pre.filter((item) => item !== "M")
-                    : [...pre, "M"],
-                )
-              }
-            >
-              <span
-                className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
-                  sizes.includes("M")
-                    ? "bg-[#292929] text-white"
-                    : "bg-white text-[#666]"
-                }`}
-              >
-                M
-              </span>
-            </div>
-
-            {/* L */}
-            <div
-              onClick={() =>
-                setSizes((pre) =>
-                  pre.includes("L")
-                    ? pre.filter((item) => item !== "L")
-                    : [...pre, "L"],
-                )
-              }
-            >
-              <span
-                className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
-                  sizes.includes("L")
-                    ? "bg-[#292929] text-white"
-                    : "bg-white text-[#666]"
-                }`}
-              >
-                L
-              </span>
-            </div>
-
-            {/* XL */}
-            <div
-              onClick={() =>
-                setSizes((pre) =>
-                  pre.includes("XL")
-                    ? pre.filter((item) => item !== "XL")
-                    : [...pre, "XL"],
-                )
-              }
-            >
-              <span
-                className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
-                  sizes.includes("XL")
-                    ? "bg-[#292929] text-white"
-                    : "bg-white text-[#666]"
-                }`}
-              >
-                XL
-              </span>
-            </div>
-
-            {/* XXL */}
-            <div
-              onClick={() =>
-                setSizes((pre) =>
-                  pre.includes("XXL")
-                    ? pre.filter((item) => item !== "XXL")
-                    : [...pre, "XXL"],
-                )
-              }
-            >
-              <span
-                className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
-                  sizes.includes("XXL")
-                    ? "bg-[#292929] text-white"
-                    : "bg-white text-[#666]"
-                }`}
-              >
-                XXL
-              </span>
-            </div>
+            {["S", "M", "L", "XL", "XXL"].map((size) => (
+              <div key={size} onClick={() => handleSize(size)}>
+                <span
+                  className={`inline-flex h-6 min-w-7.25 cursor-pointer items-center justify-center rounded border border-[#e1e1e1] px-2 text-[12px] ${
+                    sizes.includes(size)
+                      ? "bg-[#292929] text-white"
+                      : "bg-white text-[#666]"
+                  }`}
+                >
+                  {size}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -227,13 +259,10 @@ const AddProduct = () => {
                 className="flex h-15 w-15 cursor-pointer items-center justify-center overflow-hidden rounded border border-[#eee] bg-white"
               >
                 <input
-                  onChange={(e) => {
-                    const updatedFiles = [...files];
-                    updatedFiles[index] = e.target.files[0];
-                    setFiles(updatedFiles);
-                  }}
+                  onChange={(e) => handleImageChange(e, index)}
                   type="file"
                   id={`image${index}`}
+                  accept="image/*"
                   hidden
                 />
 
@@ -243,7 +272,7 @@ const AddProduct = () => {
                       ? URL.createObjectURL(files[index])
                       : upload_icon
                   }
-                  alt="uploadArea"
+                  alt="upload"
                   width={60}
                   height={60}
                   className={`h-full w-full ${
@@ -254,12 +283,11 @@ const AddProduct = () => {
             ))}
         </div>
 
-        {/* Add to Popular */}
+        {/* Popular */}
         <div className="mb-3 flex items-center gap-2">
           <input
-            onChange={() => setPopular((prev) => !prev)}
+            {...register("popular")}
             type="checkbox"
-            checked={popular}
             id="popular"
             className="h-3.25 w-3.25 cursor-pointer accent-[#292929]"
           />
@@ -275,9 +303,10 @@ const AddProduct = () => {
         {/* Add Product */}
         <button
           type="submit"
-          className="mt-1 h-10.75 w-39 rounded bg-[#292929] text-[12px] font-medium text-white transition hover:bg-black"
+          disabled={isSubmitting}
+          className="mt-1 h-10.75 w-39 rounded bg-[#292929] text-[12px] font-medium text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Add Product
+          {isSubmitting ? "Adding..." : "Add Product"}
         </button>
       </form>
     </div>

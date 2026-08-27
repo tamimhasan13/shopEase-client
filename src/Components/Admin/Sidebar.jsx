@@ -5,7 +5,10 @@ import {
   ShoppingBag,
   LogOut,
 } from "lucide-react";
-import { Link, NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
+import toast from "react-hot-toast";
 
 const adminNavLinks = [
   {
@@ -26,6 +29,23 @@ const adminNavLinks = [
 ];
 
 const Sidebar = () => {
+    const { setIsAdmin, axios } = useContext(AuthContext);
+    const navigate=useNavigate()
+    const adminLogout = async () => {
+      try {
+        const response = await axios.post("/api/admin/logout");
+
+        if (response.data.success) {
+          setIsAdmin(false);
+          toast.success(response.data.message);
+          navigate("/");
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    };
   return (
     <aside className="w-full shrink-0 border-b border-gray-200 bg-white lg:min-h-screen lg:w-64 lg:border-b-0 lg:border-r">
       <div className="flex flex-col p-5 lg:min-h-screen">
@@ -70,6 +90,7 @@ const Sidebar = () => {
 
           {/* Logout */}
           <button
+            onClick={adminLogout}
             type="button"
             className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-500 sm:px-4 lg:mt-auto lg:w-full lg:px-4 lg:py-3"
           >

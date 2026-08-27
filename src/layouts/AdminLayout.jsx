@@ -6,11 +6,14 @@ import AdminLogin from "../Components/Admin/AdminLogin";
 import Sidebar from "../Components/Admin/Sidebar";
 
 const AdminLayout = () => {
-  const { isAdmin } = useContext(AuthContext);
+  const { isAdmin, adminLoading } = useContext(AuthContext);
 
-  if (!isAdmin) {
-    return <AdminLogin />;
+  if (adminLoading) {
+    return <div>Loading...</div>;
   }
+   if (!isAdmin) {
+       return <AdminLogin />;
+     }
 
   return (
     <div className="min-h-screen bg-gray-100">
