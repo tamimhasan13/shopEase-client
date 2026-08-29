@@ -6,53 +6,116 @@ import axios from "axios"
 axios.defaults.withCredentials=true
 axios.defaults.baseURL=import.meta.env.VITE_BACKEND_URL
 const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [showUser, setShowUser] = useState();
-  const [isAdmin,setIsAdmin]=useState(false);
+  const [showUser, setShowUser] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(true);
   const currency = import.meta.env.VITE_CURRENCY;
   const Shipping_fee = 10;
   const Tax_rate = 0.02;
-  // const navigate=useNavigate();
   const [cartItems, setCartItems] = useState({});
-  // fetch admin
-useEffect(() => {
-  const checkAdmin = async () => {
+  // fetch user
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data } = await axios.get("/api/user/is-auth");
+
+        if (data.success) {
+          setUser(data.user);
+          setCartItems(data.cartData || {});
+        } else {
+          setUser(null);
+          setCartItems({});
+        }
+      } catch (error) {
+        console.log(error);
+
+        setUser(null);
+        setCartItems({});
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+  //usrLogout
+  const userLogout = async () => {
     try {
-      const response = await axios.get("/api/admin/is-auth");
+      const response = await axios.post("/api/user/logout");
 
       if (response.data.success) {
-        setIsAdmin(true);
+        setUser(null);
+        setCartItems({});
+        toast.success(response.data.message || "Logout successful");
+
       } else {
-        setIsAdmin(false);
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      setIsAdmin(false);
-    } finally {
-      setAdminLoading(false);
+      toast.error(error.response?.data?.message || "Logout failed");
     }
   };
+  // fetch admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const response = await axios.get("/api/admin/is-auth");
 
-  checkAdmin();
-}, []);
+        if (response.data.success) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setIsAdmin(false);
+      } finally {
+        setAdminLoading(false);
+      }
+    };
+
+    checkAdmin();
+  }, []);
   // Add product to cart
-  const addToCart = (itemId, size) => {
+
+  const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Please select a size first");
       return;
     }
 
-    setCartItems((cart) => ({
-      ...cart,
-      [itemId]: {
-        ...cart[itemId],
-        [size]: (cart[itemId]?.[size] || 0) + 1,
-      },
-    }));
+    try {
+      // Backend এ cart save/update
+      const { data } = await axios.post("/api/cart/add", {
+        itemId,
+        size,
+      });
 
-    toast.success("Product added to cart");
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      // UI  update
+      setCartItems((cart) => ({
+        ...cart,
+        [itemId]: {
+          ...cart[itemId],
+          [size]: (cart[itemId]?.[size] || 0) + 1,
+        },
+      }));
+
+      toast.success("Product added to cart");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to add product to cart",
+      );
+    }
   };
   //card count
   const getCartCount = () => {
@@ -67,20 +130,40 @@ useEffect(() => {
     return count;
   };
   //update cart quantity
-  const updateQuantity = (itemId, size, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(itemId, size);
-      return;
-    }
+ const updateQuantity = async (itemId, size, quantity) => {
+   if (quantity <= 0) {
+     removeFromCart(itemId, size);
+     return;
+   }
 
-    setCartItems((cart) => ({
-      ...cart,
-      [itemId]: {
-        ...cart[itemId],
-        [size]: quantity,
-      },
-    }));
-  };
+   // UI update
+   setCartItems((cart) => ({
+     ...cart,
+     [itemId]: {
+       ...cart[itemId],
+       [size]: quantity,
+     },
+   }));
+
+   // Backend update
+   if (!user) return;
+
+   try {
+     const { data } = await axios.post("/api/cart/update", {
+       itemId,
+       size,
+       quantity,
+     });
+
+     if (!data.success) {
+       toast.error(data.message);
+       return;
+     }
+   } catch (error) {
+     console.log(error);
+     toast.error("Failed to update cart");
+   }
+ };
 
   // Remove product from cart
   const removeFromCart = (itemId, size) => {
@@ -123,7 +206,9 @@ useEffect(() => {
       return total + productTotal;
     }, 0);
   };
+
   //fetch product
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -162,9 +247,11 @@ useEffect(() => {
     setIsAdmin,
     isAdmin,
     adminLoading,
-    axios
+    axios,
+    userLoading,
+    userLogout,
   };
   return <AuthContext value={userInfo}>{children}</AuthContext>;
-};;
+};;;
 
 export default AuthContextProvider;

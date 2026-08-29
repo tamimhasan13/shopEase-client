@@ -1,27 +1,36 @@
 import { useContext, useState } from "react";
 import { ShoppingCart, User, Package, LogOut } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import toast from "react-hot-toast";
 
 const HeaderActions = ({ cartCount = 0}) => {
   const [profileOpen, setProfileOpen] = useState(false);
-  const {user}=useContext(AuthContext);
-console.log(user);
+  const {user,setUser,setCartItems,axios}=useContext(AuthContext);
+  const navigate=useNavigate()
+
   // AuthContext  user
 
-  const handleLogout = () => {
+  const handleLogout =async () => {
     setProfileOpen(false);
+   try {
+      const response = await axios.post("/api/user/logout");
 
-    //  Firebase logout 
-  //     try {
-  //   await signOut(auth);
-  //   setProfileOpen(false);
-  //   navigate("/");
-  // } catch (error) {
-  //   console.error("Logout failed:", error);
-  // }
-    console.log("User logged out");
+      if (response.data.success) {
+        setUser(null);
+        setCartItems({});
+        toast.success(response.data.message || "Logout successful");
+        navigate("/");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Logout failed");
+    }
   };
+    
+ 
 
   return (
     <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import upload_icon from "../../assets/upload_icon.png";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const AddProduct = () => {
-    const {axios}=useContext(AuthContext);
+  const { axios, setProducts } = useContext(AuthContext);
   const [files, setFiles] = useState([]);
   const [sizes, setSizes] = useState([]);
   const {
@@ -24,7 +24,6 @@ const AddProduct = () => {
       popular: false,
     },
   });
-
   // Size select/unselect
   const handleSize = (size) => {
     setSizes((prev) =>
@@ -33,7 +32,6 @@ const AddProduct = () => {
         : [...prev, size],
     );
   };
-
   // Image select
   const handleImageChange = (e, index) => {
     const file = e.target.files[0];
@@ -42,7 +40,6 @@ const AddProduct = () => {
     updatedFiles[index] = file;
     setFiles(updatedFiles);
   };
-
   // Submit
   const onSubmitHandler = async (data) => {
     try {
@@ -51,15 +48,12 @@ const AddProduct = () => {
         toast.error("Please select at least one size");
         return;
       }
-
       // Image check
       const selectedImages = files.filter(Boolean);
-
       if (selectedImages.length === 0) {
         toast.error("Please select at least one image");
         return;
       }
-
       // Product data
       const productData = {
         name: data.name,
@@ -70,23 +64,19 @@ const AddProduct = () => {
         popular: data.popular,
         sizes: sizes,
       };
-
       // FormData
       const formData = new FormData();
-
       // Product data backend 
       formData.append("productData", JSON.stringify(productData));
-
       // Images backend 
       selectedImages.forEach((file) => {
         formData.append("images", file);
       });
-
       // API request
       const response = await axios.post("/api/product/add", formData);
-
       if (response.data.success) {
         toast.success(response.data.message);
+        setProducts((prev) => [...prev, response.data.product]);
         // Form reset
         reset();
         setFiles([]);
@@ -177,7 +167,6 @@ const AddProduct = () => {
             <h5 className="mb-1.5 text-[13px] font-semibold text-[#292929]">
               Product Price
             </h5>
-
             <input
               {...register("price", {
                 required: "Price is required",
@@ -224,7 +213,6 @@ const AddProduct = () => {
             )}
           </div>
         </div>
-
         {/* Product Sizes */}
         <div className="mb-3">
           <h5 className="mb-1.5 text-[13px] font-semibold text-[#292929]">

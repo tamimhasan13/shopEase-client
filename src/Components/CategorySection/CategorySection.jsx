@@ -24,7 +24,7 @@ const CategorySection = () => {
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                   />
                 </div>
-
+                
                 {/* Name */}
                 <h3 className="mt-4 text-center text-base font-semibold text-gray-800 transition-colors duration-300 group-hover:text-red-500">
                   {category.name}

@@ -1,25 +1,24 @@
 import { createBrowserRouter } from "react-router";
 
 // Layouts
-import RootLayout from "../layouts/RootLayout";
-import HomePage from "../pages/HomePage/HomePage";
-import CollectionPage from "../pages/CollectionPage/CollectionPage";
-import CategoryCollectionPage from "../pages/CategoryCollectionPage/CategoryCollectionPage";
-import ProductDetailsPage from "../pages/ProductDetails/ProductDetailsPage";
-import TestimonialPage from "../pages/TestimonialPage/TestimonialPage";
-import ContractPage from "../pages/ContractPage/ContractPage";
-import CartPage from "../pages/CartPage/CartPage";
-import PlaceOderPage from "../pages/PlaceOderPage/PlaceOderPage";
-import MyOrdersPage from "../pages/MyOrdersPage/MyOrdersPage";
-import AuthLayout from "../layouts/AuthLayout";
 import Login from "../Components/Login/Login";
 import Register from "../Components/Register/Register";
-import PlaceOrderPage from "../pages/PlaceOderPage/PlaceOderPage";
 import AdminLayout from "../layouts/AdminLayout";
+import AuthLayout from "../layouts/AuthLayout";
+import RootLayout from "../layouts/RootLayout";
 import AddProduct from "../pages/AdminPage/AddProduct";
 import ListProduct from "../pages/AdminPage/ListProduct";
 import Orders from "../pages/AdminPage/Orders";
-
+import CartPage from "../pages/CartPage/CartPage";
+import CategoryCollectionPage from "../pages/CategoryCollectionPage/CategoryCollectionPage";
+import CollectionPage from "../pages/CollectionPage/CollectionPage";
+import ContractPage from "../pages/ContractPage/ContractPage";
+import HomePage from "../pages/HomePage/HomePage";
+import LoadingPage from "../pages/Loading/LoadingPage";
+import MyOrdersPage from "../pages/MyOrdersPage/MyOrdersPage";
+import PlaceOrderPage from "../pages/PlaceOderPage/PlaceOderPage";
+import ProductDetailsPage from "../pages/ProductDetails/ProductDetailsPage";
+import TestimonialPage from "../pages/TestimonialPage/TestimonialPage";
 
 export const router = createBrowserRouter([
   {
@@ -64,8 +63,8 @@ export const router = createBrowserRouter([
         element: <MyOrdersPage></MyOrdersPage>,
       },
       {
-        path: "/place-order",
-        element: <PlaceOderPage></PlaceOderPage>,
+        path: "/loader",
+        element: <LoadingPage></LoadingPage>,
       },
     ],
   },

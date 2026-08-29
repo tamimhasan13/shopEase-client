@@ -4,11 +4,12 @@ import { useForm } from "react-hook-form";
 
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CartSummary from "../CartPage/CartSummary";
+import toast from "react-hot-toast";
 
 const PlaceOrderPage = () => {
   const navigate = useNavigate();
 
-  const { cartItems, getCartCount, getCartAmount, Shipping_fee, Tax_rate } =
+  const { cartItems, getCartCount,setCartItems, getCartAmount, Shipping_fee, Tax_rate,axios } =
     useContext(AuthContext);
 
   const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -23,49 +24,71 @@ const PlaceOrderPage = () => {
   });
 
   // CART SUMMARY
-
   const totalItems = getCartCount();
-
   const subtotal = getCartAmount();
-
   const shippingFee = subtotal > 0 ? Shipping_fee : 0;
-
   const tax = subtotal * Tax_rate;
-
   const total = subtotal + shippingFee + tax;
-
   // PLACE ORDER
-
   const onSubmit = async (formData) => {
     try {
       setLoading(true);
 
-      const orderData = {
-        deliveryInfo: formData,
-        paymentMethod,
-        cartItems,
-        pricing: {
-          subtotal,
-          shippingFee,
-          tax,
-          total,
-        },
-      };
+      const items = [];
 
-      console.log("Order Data:", orderData);
+      for (const itemId in cartItems) {
+        for (const size in cartItems[itemId]) {
+          const quantity = cartItems[itemId][size];
 
-      // PAYMENT LOGIC
-
-      if (paymentMethod === "stripe") {
-        console.log("Proceeding with Stripe...");
-      } else {
-        console.log("Cash on Delivery selected");
+          if (quantity > 0) {
+            items.push({
+              product: itemId, 
+              size,
+              quantity,
+            });
+          }
+        }
       }
-      // API / Firebase order logic এখানে হবে
-      // Example:
-      // navigate("/order-success");
+
+      // Cash on Delivery
+      if (paymentMethod === "cash") {
+        const { data } = await axios.post("/api/order/cod", {
+          items,
+          address: formData,
+        });
+
+        if (!data.success) {
+          toast.error(data.message);
+          return;
+        }
+
+        setCartItems({});
+        toast.success(data.message);
+        navigate("/my-orders");
+        return;
+      }
+
+      // Stripe
+      if (paymentMethod === "stripe") { 
+        const { data } = await axios.post("/api/order/stripe", { items, address: formData, });
+         if (!data.success) {
+          toast.error(data.message);
+           return; 
+        } 
+        
+        // Stripe checkout page 
+         window.location.assign(data.url); }
+
+
     } catch (error) {
-      console.error("Order failed:", error);
+      console.log("ERROR:", error);
+      console.log("RESPONSE:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
+      );
     } finally {
       setLoading(false);
     }
