@@ -166,29 +166,53 @@ const AuthContextProvider = ({ children }) => {
  };
 
   // Remove product from cart
-  const removeFromCart = (itemId, size) => {
-    setCartItems((cart) => {
-      const updatedCart = { ...cart };
+  // const removeFromCart = (itemId, size) => {
+  //   setCartItems((cart) => {
+  //     const updatedCart = { ...cart };
 
-      if (!updatedCart[itemId]) {
-        return updatedCart;
+  //     if (!updatedCart[itemId]) {
+  //       return updatedCart;
+  //     }
+
+  //     updatedCart[itemId] = {
+  //       ...updatedCart[itemId],
+  //     };
+
+  //     delete updatedCart[itemId][size];
+
+  //     //  size not  product-remove
+  //     if (Object.keys(updatedCart[itemId]).length === 0) {
+  //       delete updatedCart[itemId];
+  //     }
+
+  //     return updatedCart;
+  //   });
+
+  //   toast.success("Product removed from cart");
+  // };
+  const removeFromCart = async (itemId, size) => {
+    try {
+      const { data } = await axios.post("/api/cart/remove", {
+        itemId,
+        size,
+      });
+
+      if (!data.success) {
+        toast.error(data.message);
+        return;
       }
 
-      updatedCart[itemId] = {
-        ...updatedCart[itemId],
-      };
+      // Backend updated cart state
+      setCartItems(data.cartData || {});
 
-      delete updatedCart[itemId][size];
+      toast.success("Product removed from cart");
+    } catch (error) {
+      console.log(error);
 
-      //  size not  product-remove
-      if (Object.keys(updatedCart[itemId]).length === 0) {
-        delete updatedCart[itemId];
-      }
-
-      return updatedCart;
-    });
-
-    toast.success("Product removed from cart");
+      toast.error(
+        error.response?.data?.message || "Failed to remove product from cart",
+      );
+    }
   };
 
   // card amount
