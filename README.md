@@ -18,7 +18,7 @@
 
 ### 🏠 Home Page
 
-![ShopEase Home Page](./screenshots/home.png)
+![ShopEase Home Page](./screenshots/home.PNG)
 
 ### 🛍️ Product Listing
 
